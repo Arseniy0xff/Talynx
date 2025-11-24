@@ -15,23 +15,17 @@ class Ui_Form(object):
         Form.resize(366, 90)
         self.gridLayout = QtWidgets.QGridLayout(Form)
         self.gridLayout.setObjectName("gridLayout")
+        spacerItem = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
         self.pushButton = QtWidgets.QPushButton(parent=Form)
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 0, 0, 1, 1)
-        self.toolButton = QtWidgets.QToolButton(parent=Form)
-        self.toolButton.setStyleSheet(":hover {\n"
-"    background-color: #808080;\n"
-"}")
-        self.toolButton.setObjectName("toolButton")
-        self.gridLayout.addWidget(self.toolButton, 0, 2, 1, 1)
         self.toolButton_2 = QtWidgets.QToolButton(parent=Form)
         self.toolButton_2.setStyleSheet(":hover {\n"
 "    background-color: #FF6961;\n"
 "}")
         self.toolButton_2.setObjectName("toolButton_2")
-        self.gridLayout.addWidget(self.toolButton_2, 0, 3, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.toolButton_2, 0, 2, 1, 1)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -40,7 +34,6 @@ class Ui_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.pushButton.setText(_translate("Form", "[open]"))
-        self.toolButton.setText(_translate("Form", "Edit"))
         self.toolButton_2.setText(_translate("Form", "Del"))
 
 

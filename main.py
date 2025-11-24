@@ -14,6 +14,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         self.ui.pushButton.clicked.connect(self.create_new_note)
+        self.ui.tabWidget.tabCloseRequested.connect(self.close_tab)
 
         self.DSM = DSM()
         self.load_notes()
@@ -52,9 +53,13 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(e)
 
-
     def load_notes(self):
         [self.create_new_note(_) for _ in self.DSM.get_all_notes()]
+
+    def close_tab(self, index):
+        widget = self.ui.tabWidget.widget(index)
+        self.ui.tabWidget.removeTab(index)
+        widget.deleteLater()
 
 
 if __name__ == "__main__":

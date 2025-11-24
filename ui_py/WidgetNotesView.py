@@ -24,6 +24,7 @@ class Ui_Form(object):
         self.lineEdit.setObjectName("lineEdit")
         self.gridLayout.addWidget(self.lineEdit, 0, 0, 1, 2)
         self.listWidget_2 = QtWidgets.QListWidget(parent=Form)
+        self.listWidget_2.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         self.listWidget_2.setObjectName("listWidget_2")
         self.gridLayout.addWidget(self.listWidget_2, 1, 1, 2, 1)
         self.pushButton_2 = QtWidgets.QPushButton(parent=Form)

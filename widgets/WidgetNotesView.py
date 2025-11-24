@@ -1,11 +1,14 @@
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QDialog, QListWidgetItem
 
 import name_space
 from DSM import DSM
+from functional_module import FuncMod
 from ui_py.WidgetNotesView import Ui_Form
 
 from widgets.DialogNoteEdit import DialogNoteEdit
 from widgets.DialogNoteView import DialogNoteView
+from widgets.DialogNoteViewAndEdit import DialogNoteViewAndEdit
 from widgets.WidgetItemCard import WidgetItemCard
 
 
@@ -17,10 +20,12 @@ class WidgetNotesView(QDialog):
 
         self.notes_dict = notes_dict
         self.password = password
-        print(f'Password: "{password}"')
+        # print(f'Password: "{password}"')
 
         self.ui.pushButton.clicked.connect(self.new_item)
         self.ui.pushButton_2.clicked.connect(self.save_note)
+        self.ui.listWidget_2.itemSelectionChanged.connect(self.display_items_only_selected_tags)
+        self.ui.lineEdit.textChanged.connect(self.display_items_only_search)
 
         self.DSM = DSM()
 
@@ -41,11 +46,15 @@ class WidgetNotesView(QDialog):
                 tags = d.ui.lineEdit.text().split() if len(d.ui.lineEdit.text()) > 0 else []
 
             widget_instance = WidgetItemCard(text, tags)
-            widget_instance.ui.pushButton.setText(text[:name_space.TEXT_LIMIT_IN_BUTTONS] + '...' if len(text) > name_space.TEXT_LIMIT_IN_BUTTONS else '')
+
+            widget_instance.ui.pushButton.setText(
+                FuncMod().str_lim(text, name_space.TEXT_LIMIT_IN_BUTTONS)
+            )
 
             widget_instance.removeRequested.connect(self.remove_item)
             widget_instance.updateDictRequested.connect(self.dict_data_update)
             widget_instance.openNoteView.connect(self.note_view)
+            widget_instance.viewAndEditRequested.connect(self.view_and_edit_item)
 
             list_item = QListWidgetItem()
             list_item.setSizeHint(widget_instance.sizeHint())
@@ -65,9 +74,35 @@ class WidgetNotesView(QDialog):
 
 
     def load_items_from_dict(self):
+        self.ui.listWidget.clear()
         for i in self.notes_dict['content']:
             self.new_item(i['text'], i['tags'], without_dialog=True)
 
+
+    def view_and_edit_item(self, widget):
+        try:
+            d = DialogNoteViewAndEdit(widget.text, widget.tags, self.notes_dict)
+            d.openItemBySuggestion.connect(self.open_item_by_suggestion)
+
+            if d.exec() == QDialog.DialogCode.Accepted:
+                print('save')
+                widget.text = d.ui.textEdit.toPlainText()
+                widget.tags = d.ui.plainTextEdit.toPlainText().split() if len(d.ui.plainTextEdit.toPlainText()) > 0 else []
+
+                widget.ui.pushButton.setText(
+                    FuncMod().str_lim(widget.text, name_space.TEXT_LIMIT_IN_BUTTONS)
+                )
+
+                self.dict_data_update()
+        except Exception as e:
+            print(e)
+
+    def open_item_by_suggestion(self, text, tags):
+        for i in range(self.ui.listWidget.count()):
+            item = self.ui.listWidget.item(i)
+            if self.ui.listWidget.itemWidget(item).text == text and self.ui.listWidget.itemWidget(item).tags == tags:
+                self.ui.listWidget.itemWidget(item).view_and_edit_item()
+                break
 
     def note_view(self, text, tags):
         d = DialogNoteView(text, tags, self.notes_dict)
@@ -97,7 +132,44 @@ class WidgetNotesView(QDialog):
         self.ui.listWidget_2.clear()
         for k, v in unique.items():
             item = QListWidgetItem(f'{k} ({v})')
+            item.setData(Qt.ItemDataRole.UserRole, k)
             self.ui.listWidget_2.addItem(item)
+
+    def display_items_only_selected_tags(self):
+        if len(self.ui.listWidget_2.selectedItems()) > 0:
+            selected_dates = []
+            for item in self.ui.listWidget_2.selectedItems():
+                selected_dates.append(item.data(Qt.ItemDataRole.UserRole))
+
+            for i in range(self.ui.listWidget.count()):
+                item = self.ui.listWidget.item(i)
+                widget_class = self.ui.listWidget.itemWidget(item)
+                if len(set(widget_class.tags) & set(selected_dates)) > 0:
+                    item.setHidden(False)
+                else:
+                    item.setHidden(True)
+        else:
+            for i in range(self.ui.listWidget.count()):
+                item = self.ui.listWidget.item(i)
+                item.setHidden(False)
+
+
+    def display_items_only_search(self):
+        if len(self.ui.lineEdit.text()) > 0:
+
+            for i in range(self.ui.listWidget.count()):
+                item = self.ui.listWidget.item(i)
+                widget_class = self.ui.listWidget.itemWidget(item)
+
+                if self.ui.lineEdit.text().lower() in widget_class.text.lower():
+                    item.setHidden(False)
+                else:
+                    item.setHidden(True)
+
+        else:
+            for i in range(self.ui.listWidget.count()):
+                item = self.ui.listWidget.item(i)
+                item.setHidden(False)
 
 
     def remove_item(self, widget):
