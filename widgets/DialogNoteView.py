@@ -1,4 +1,5 @@
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QDialog, QLabel, QListWidgetItem
 from ui_py.DialogNoteView import Ui_Dialog
 
@@ -9,6 +10,7 @@ class DialogNoteView(QDialog):
         super().__init__()
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.setWindowIcon(QIcon(str(name_space.ICON_PATH)))
         self.text = text
         self.tags = tags
         self.notes_dict = notes_dict

@@ -1,11 +1,11 @@
-from PyQt6.QtWidgets import QDialog, QMessageBox
+from PyQt6.QtWidgets import QDialog, QMessageBox, QWidget
 from ui_py.WidgetNoteCard import Ui_Form
 
 from widgets.WidgetNotesView import WidgetNotesView
 from widgets.DialogEnterPassword import DialogEnterPassword
 from widgets.DialogNoteSetting import DialogNoteSetting
 
-class WidgetNoteCard(QDialog):
+class WidgetNoteCard(QWidget):
     def __init__(self, parent, notes_dict: dict, password = ''):
         super().__init__()
         self.ui = Ui_Form()

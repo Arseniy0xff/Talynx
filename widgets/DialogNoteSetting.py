@@ -1,5 +1,8 @@
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QDialog, QLineEdit, QDialogButtonBox
+
+import name_space
 from ui_py.DialogNoteSetting import Ui_Dialog
 
 class DialogNoteSetting(QDialog):
@@ -7,6 +10,7 @@ class DialogNoteSetting(QDialog):
         super().__init__()
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.setWindowIcon(QIcon(str(name_space.ICON_PATH)))
 
         self.ui.lineEdit.setFocus()
         self.ui.lineEdit_2.setEchoMode(QLineEdit.EchoMode.Password)

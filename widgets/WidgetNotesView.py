@@ -1,5 +1,6 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QDialog, QListWidgetItem
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QDialog, QListWidgetItem, QWidget
 
 import name_space
 from DSM import DSM
@@ -11,11 +12,12 @@ from widgets.DialogNoteViewAndEdit import DialogNoteViewAndEdit
 from widgets.WidgetItemCard import WidgetItemCard
 
 
-class WidgetNotesView(QDialog):
+class WidgetNotesView(QWidget):
     def __init__(self, notes_dict, password):
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        self.setWindowIcon(QIcon(str(name_space.ICON_PATH)))
 
         self.notes_dict = notes_dict
         self.password = password
