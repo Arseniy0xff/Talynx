@@ -7,7 +7,6 @@ from functional_module import FuncMod
 from ui_py.WidgetNotesView import Ui_Form
 
 from widgets.DialogNoteEdit import DialogNoteEdit
-from widgets.DialogNoteView import DialogNoteView
 from widgets.DialogNoteViewAndEdit import DialogNoteViewAndEdit
 from widgets.WidgetItemCard import WidgetItemCard
 
@@ -52,8 +51,6 @@ class WidgetNotesView(QDialog):
             )
 
             widget_instance.removeRequested.connect(self.remove_item)
-            widget_instance.updateDictRequested.connect(self.dict_data_update)
-            widget_instance.openNoteView.connect(self.note_view)
             widget_instance.viewAndEditRequested.connect(self.view_and_edit_item)
 
             list_item = QListWidgetItem()
@@ -85,7 +82,6 @@ class WidgetNotesView(QDialog):
             d.openItemBySuggestion.connect(self.open_item_by_suggestion)
 
             if d.exec() == QDialog.DialogCode.Accepted:
-                print('save')
                 widget.text = d.ui.textEdit.toPlainText()
                 widget.tags = d.ui.plainTextEdit.toPlainText().split() if len(d.ui.plainTextEdit.toPlainText()) > 0 else []
 
@@ -103,10 +99,6 @@ class WidgetNotesView(QDialog):
             if self.ui.listWidget.itemWidget(item).text == text and self.ui.listWidget.itemWidget(item).tags == tags:
                 self.ui.listWidget.itemWidget(item).view_and_edit_item()
                 break
-
-    def note_view(self, text, tags):
-        d = DialogNoteView(text, tags, self.notes_dict)
-        d.exec()
 
 
     def dict_data_update(self):
@@ -130,21 +122,36 @@ class WidgetNotesView(QDialog):
                 unique[j] = unique.get(j, 0) + 1
 
         self.ui.listWidget_2.clear()
+
+        item = QListWidgetItem('')
+        item.setData(Qt.ItemDataRole.UserRole, 'space')
+        self.ui.listWidget_2.addItem(item)
+
         for k, v in unique.items():
             item = QListWidgetItem(f'{k} ({v})')
             item.setData(Qt.ItemDataRole.UserRole, k)
             self.ui.listWidget_2.addItem(item)
 
+
     def display_items_only_selected_tags(self):
         if len(self.ui.listWidget_2.selectedItems()) > 0:
-            selected_dates = []
+
+            if len(self.ui.listWidget_2.selectedItems()) == 1:
+                item = self.ui.listWidget_2.selectedItems()[0]
+                if item.data(Qt.ItemDataRole.UserRole) == 'space':
+                    for i in range(self.ui.listWidget.count()):
+                        item = self.ui.listWidget.item(i)
+                        item.setHidden(False)
+                    return
+
+            selected_tags = []
             for item in self.ui.listWidget_2.selectedItems():
-                selected_dates.append(item.data(Qt.ItemDataRole.UserRole))
+                selected_tags.append(item.data(Qt.ItemDataRole.UserRole))
 
             for i in range(self.ui.listWidget.count()):
                 item = self.ui.listWidget.item(i)
                 widget_class = self.ui.listWidget.itemWidget(item)
-                if len(set(widget_class.tags) & set(selected_dates)) > 0:
+                if len(set(widget_class.tags) & set(selected_tags)) > 0:
                     item.setHidden(False)
                 else:
                     item.setHidden(True)

@@ -1,6 +1,9 @@
 import sys
+
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QDialog
 
+import name_space
 from DSM import DSM
 from ui_py.MainWindow import Ui_MainWindow
 from widgets.DialogNoteSetting import DialogNoteSetting
@@ -18,7 +21,6 @@ class MainWindow(QMainWindow):
 
         self.DSM = DSM()
         self.load_notes()
-        # print(self.DSM.get_all_notes())
 
 
     def create_new_note(self, notes_dict = None):
@@ -41,7 +43,6 @@ class MainWindow(QMainWindow):
 
             widget_instance = WidgetNoteCard(self, notes_dict, password)
             widget_instance.ui.label.setText(notes_dict['name'])
-            # widget_instance.removeRequested.connect(self.remove_custom_item)
             list_item = QListWidgetItem()
             list_item.setSizeHint(widget_instance.sizeHint())
 
@@ -65,5 +66,6 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
+    window.setWindowIcon(QIcon(str(name_space.ICON_PATH)))
     window.show()
     sys.exit(app.exec())

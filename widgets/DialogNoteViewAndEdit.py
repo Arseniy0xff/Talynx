@@ -54,7 +54,4 @@ class DialogNoteViewAndEdit(QDialog):
     def on_item_double_clicked(self, item: QListWidgetItem):
         stored_dict = item.data(Qt.ItemDataRole.UserRole)
         self.openItemBySuggestion.emit(stored_dict['text'], stored_dict['tags'])
-        # d = DialogNoteView(stored_dict['text'], stored_dict['tags'], self.notes_dict)
-        # d.exec()
-        pass
 

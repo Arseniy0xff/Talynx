@@ -11,5 +11,3 @@ class DialogNoteEdit(QDialog):
         self.ui.textEdit.setText(text)
         if len(tags) > 0:
             self.ui.lineEdit.setText(' '.join(tags))
-
-

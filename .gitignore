@@ -1,3 +1,6 @@
 /.venv/
 /ui_ui/backup/
 /.idea/
+/build/
+/dist/
+/data/
