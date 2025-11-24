@@ -1,0 +1,7 @@
+from pathlib import Path
+
+
+PATH_TO_NOTES = Path('data/')
+
+TEXT_LIMIT_ON_SUGGESTIONS_BY_TAGS = 20
+TEXT_LIMIT_IN_BUTTONS = 14
