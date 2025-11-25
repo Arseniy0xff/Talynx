@@ -1,5 +1,5 @@
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QFont
 from PyQt6.QtWidgets import QDialog, QLabel, QListWidgetItem
 
 from functional_module import FuncMod
@@ -14,6 +14,10 @@ class DialogNoteViewAndEdit(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
         self.setWindowIcon(QIcon(str(name_space.ICON_PATH)))
+
+        self.ui.textEdit.setFont(QFont(name_space.FONT_FAMALY, name_space.FONT_SIZE + name_space.FONT_SIZE_FORM_TEXT_SHIFT))
+        self.ui.plainTextEdit.setFont(QFont(name_space.FONT_FAMALY, name_space.FONT_SIZE + name_space.FONT_SIZE_FORM_TEXT_SHIFT))
+
         self.text = text
         self.tags = tags
         self.notes_dict = notes_dict
@@ -34,7 +38,11 @@ class DialogNoteViewAndEdit(QDialog):
                     (FuncMod().str_lim(i['text'], name_space.TEXT_LIMIT_ON_SUGGESTIONS_BY_TAGS))
                     )
 
-            item.setToolTip(', '.join(list(set(i['tags']) & set(self.tags))))
+            only_match = ', '.join(list(set(i['tags']) & set(self.tags)))
+            residue = ', '.join(list(set(i['tags']) - set(self.tags)))
+            only_match += f' ({residue})' if len(residue) > 0 else ''
+
+            item.setToolTip(only_match)
             item.setData(Qt.ItemDataRole.UserRole, i)
             self.ui.listWidget.addItem(item)
 
@@ -57,3 +65,6 @@ class DialogNoteViewAndEdit(QDialog):
         stored_dict = item.data(Qt.ItemDataRole.UserRole)
         self.openItemBySuggestion.emit(stored_dict['text'], stored_dict['tags'])
 
+
+    def get_clean_tags(self) -> list:
+        return [p.strip() for  p in self.ui.plainTextEdit.toPlainText().split() if p.strip()]

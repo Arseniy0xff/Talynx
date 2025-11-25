@@ -1,3 +1,5 @@
+from math import trunc
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QDialog, QListWidgetItem, QWidget
@@ -31,41 +33,35 @@ class WidgetNotesView(QWidget):
         self.DSM = DSM()
 
         self.load_items_from_dict()
-        try:
-            self.show_all_tags()
-        except Exception as e:
-            print(e)
+        self.show_all_tags()
 
 
     def new_item(self, text='', tags=[], without_dialog=False):
-        try:
-            if not without_dialog:
-                d = DialogNoteEdit()
-                d.exec()
+        if not without_dialog:
+            d = DialogNoteEdit()
+            if d.exec() != QDialog.DialogCode.Accepted or len(d.ui.textEdit.toPlainText()) == 0:
+                return
 
-                text = d.ui.textEdit.toPlainText()
-                tags = d.ui.lineEdit.text().split() if len(d.ui.lineEdit.text()) > 0 else []
+            text = d.ui.textEdit.toPlainText()
+            tags = d.get_clean_tags()
 
-            widget_instance = WidgetItemCard(text, tags)
+        widget_instance = WidgetItemCard(text, tags)
 
-            widget_instance.ui.pushButton.setText(
-                FuncMod().str_lim(text, name_space.TEXT_LIMIT_IN_BUTTONS)
-            )
+        widget_instance.ui.pushButton.setText(
+            FuncMod().str_lim(text, name_space.TEXT_LIMIT_IN_BUTTONS)
+        )
 
-            widget_instance.removeRequested.connect(self.remove_item)
-            widget_instance.viewAndEditRequested.connect(self.view_and_edit_item)
+        widget_instance.removeRequested.connect(self.remove_item)
+        widget_instance.viewAndEditRequested.connect(self.view_and_edit_item)
 
-            list_item = QListWidgetItem()
-            list_item.setSizeHint(widget_instance.sizeHint())
+        list_item = QListWidgetItem()
+        list_item.setSizeHint(widget_instance.sizeHint())
 
-            self.ui.listWidget.addItem(list_item)
-            self.ui.listWidget.setItemWidget(list_item, widget_instance)
-            self.ui.listWidget.scrollToItem(list_item)
+        self.ui.listWidget.addItem(list_item)
+        self.ui.listWidget.setItemWidget(list_item, widget_instance)
+        self.ui.listWidget.scrollToItem(list_item)
 
-            self.dict_data_update()
-
-        except Exception as e:
-            print(e)
+        self.dict_data_update()
 
 
     def save_note(self):
@@ -85,7 +81,7 @@ class WidgetNotesView(QWidget):
 
             if d.exec() == QDialog.DialogCode.Accepted:
                 widget.text = d.ui.textEdit.toPlainText()
-                widget.tags = d.ui.plainTextEdit.toPlainText().split() if len(d.ui.plainTextEdit.toPlainText()) > 0 else []
+                widget.tags = d.get_clean_tags()
 
                 widget.ui.pushButton.setText(
                     FuncMod().str_lim(widget.text, name_space.TEXT_LIMIT_IN_BUTTONS)
@@ -121,6 +117,8 @@ class WidgetNotesView(QWidget):
 
         for i in self.notes_dict['content']:
             for j in i['tags']:
+                if j[0] == name_space.TAG_HIDING_SYMBOL:
+                    continue
                 unique[j] = unique.get(j, 0) + 1
 
         self.ui.listWidget_2.clear()

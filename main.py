@@ -1,6 +1,6 @@
 import sys
 
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QFont
 from PyQt6.QtWidgets import QApplication, QMainWindow, QListWidgetItem, QDialog
 
 import name_space
@@ -65,6 +65,8 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    font = QFont(name_space.FONT_FAMALY, name_space.FONT_SIZE)
+    app.setFont(font)
     window = MainWindow()
     window.setWindowIcon(QIcon(str(name_space.ICON_PATH)))
     window.show()
